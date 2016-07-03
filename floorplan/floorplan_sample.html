@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="content-language" content="ja">
+<title>D3 floorplan</title>
+<link rel="stylesheet" type="text/css" href="d3.floorplan.css" />
+
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="d3.floorplan.min.js"></script>
+</head>
+<body>
+<h1>フロアマップ</h1>
+<p>パン／ズーム：マウスホイール。　各レイヤーの表示非表示：右上の◀をクリック</p>
+<div id="demo"></div>
+
+
+<script>
+var w = 588;
+var h = 588;
+
+//スケールの指定
+var xscale = d3.scale.linear()
+               .domain([0,58.8])
+               .range([0, w]);
+			   
+var yscale = d3.scale.linear()
+               .domain([0,58.8])
+               .range([0, h]);
+
+//初期化			   
+var map = d3.floorplan().xScale(xscale).yScale(yscale);
+var imagelayer = d3.floorplan.imagelayer();
+var heatmap = d3.floorplan.heatmap();
+var pathplot = d3.floorplan.pathplot();
+var overlays = d3.floorplan.overlays().editMode(true);
+var mapdata = {};
+
+
+//ベースとなる画像データの読み込み
+mapdata[imagelayer.id()] = [{
+    url: '../data/warehouse_map_1.jpg',
+    x: 0,
+    y: 0,
+    height: 58.8,
+    width: 58.8
+     }];
+
+//レイヤーの追加	 
+map.addLayer(imagelayer)
+   .addLayer(pathplot);
+//   .addLayer(heatmap)
+//   .addLayer(overlays);
+
+   
+//ポリゴン、ヒートマップ、パスデータの読み込み   
+d3.json("data.json", function(data) {
+	mapdata[heatmap.id()] = data.heatmap;
+	mapdata[overlays.id()] = data.overlays;
+	mapdata[pathplot.id()] = data.pathplot;
+
+	//フロアマップ表示
+	d3.select("#demo").append("svg")
+		.attr("width", w)
+		.attr("height", h)
+		.datum(mapdata)
+		.call(map);
+		
+
+});
+</script>
+</body>
+</html>

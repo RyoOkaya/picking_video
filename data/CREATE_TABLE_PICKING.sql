@@ -1,0 +1,21 @@
+create table PICKING(
+date text,
+time text,
+workerId int,
+activitySource text,
+activitySequence int,
+activity text,
+locationId text,
+shelfId text,
+shelfTray int,
+itemId int,
+itemNum int,
+activityNotes text,
+Position_x int,
+Position_y int,
+temperature real,
+humidity real,
+calorie int,
+heartrate int,
+step int
+);
