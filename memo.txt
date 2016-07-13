@@ -1,0 +1,5 @@
+//ワーカー1で座標データを持つレコード
+db.picking.find({workerId:1, Position_x:{$ne:''}},{_id:0,time:1, workerId:1, Position_x:1, Position_y:1});
+
+//座標データをもつワーカーのworkerId
+db.picking.distinct('workerId', {Position_x:{$ne:''}});

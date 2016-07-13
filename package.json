@@ -1,0 +1,36 @@
+{
+  "name": "data-video",
+  "version": "0.1.0",
+  "description": "please type \"node server.js\" in your console.",
+  "main": "server.js",
+  "dependencies": {
+    "async": "^2.0.0-rc.6",
+    "bulma": "^0.0.28",
+    "compression": "^1.6.2",
+    "express": "^4.14.0",
+    "install": "^0.8.1",
+    "mongodb": "^2.2.0",
+    "mongoose": "^4.5.3",
+    "npm": "^3.10.5",
+    "path": "^0.12.7",
+    "plotly.js": "^1.14.0",
+    "socket.io": "^1.4.8",
+    "sqlite3": "^3.1.4",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RyoOkaya/picking_video.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RyoOkaya/picking_video/issues"
+  },
+  "homepage": "https://github.com/RyoOkaya/picking_video#readme"
+}

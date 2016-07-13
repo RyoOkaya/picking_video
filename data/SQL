@@ -1,0 +1,3 @@
+sqlite3 picking_data.sqlite3
+sqlite> select Position_x, Position_y from PICKING 
+WHERE workerId = 1 and Position_x is NOT NULL and Position_x is NOT NULL;

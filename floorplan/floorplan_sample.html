@@ -1,73 +1,160 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="utf-8" />
-<meta http-equiv="content-language" content="ja">
-<title>D3 floorplan</title>
-<link rel="stylesheet" type="text/css" href="d3.floorplan.css" />
+    <meta charset="utf-8" />
+    <meta http-equiv="content-language" content="ja">
+    <title>D3 floorplan</title>
+    <link rel="stylesheet" type="text/css" href="d3.floorplan.css" />
 
-<script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="d3.floorplan.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-pink.min.css">
+    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="d3.floorplan.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
 </head>
+
 <body>
-<h1>フロアマップ</h1>
-<p>パン／ズーム：マウスホイール。　各レイヤーの表示非表示：右上の◀をクリック</p>
-<div id="demo"></div>
+    テキストボックスにWorkerIdを入力してLoadボタンをクリック。<br>
+    ロードが終わったら、スライダーで位置調整<br>
+    <div class="mdl-textfield mdl-js-textfield">
+        <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="workerIdTxt">
+        <label class="mdl-textfield__label" for="workerIdTxt">Input Worker ID...</label>
+        <span class="mdl-textfield__error">Input is not a number!</span>
+    </div>
+    <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" id="loadBtn" onClick="loadPositions()">
+  Load
+</button>
+    <!-- MDL Spinner Component with Single Color -->
+    <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner" id="load_spinner"></div>
+
+    <div id="demo"></div>
+
+    <p style="width:500px">
+        <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="0" tabindex="0" oninput="updateSlider(this.value)" onchange="updateSlider(this.value)"　id="seek_bar">
+    </p>
+    Value:
+    <div id="slider_value">0</div>
+
+    <script>
+        var w = 588;
+        var h = 588;
+
+        //スケールの指定
+        var xscale = d3.scale.linear()
+            .domain([0, 58.8])
+            .range([0, w]);
+
+        var yscale = d3.scale.linear()
+            .domain([0, 58.8])
+            .range([0, h]);
+
+        //初期化			   
+        var map = d3.floorplan().xScale(xscale).yScale(yscale);
+        var imagelayer = d3.floorplan.imagelayer();
+        var heatmap = d3.floorplan.heatmap();
+        var pathplot = d3.floorplan.pathplot();
+        var overlays = d3.floorplan.overlays().editMode(true);
+        var mapdata = {};
+        var PUSH_UNIT = 10;
+        var pushCount = 0;
+        var xyPoints = [];
+
+        //ベースとなる画像データの読み込み
+        mapdata[imagelayer.id()] = [{
+            url: './data/warehouse_map_1.jpg',
+            x: 0,
+            y: 0,
+            height: 58.8,
+            width: 58.8
+        }];
+
+        //レイヤーの追加	 
+        map.addLayer(imagelayer)
+            .addLayer(pathplot);
+        //   .addLayer(heatmap)
+        //   .addLayer(overlays);
 
 
-<script>
-var w = 588;
-var h = 588;
-
-//スケールの指定
-var xscale = d3.scale.linear()
-               .domain([0,58.8])
-               .range([0, w]);
-			   
-var yscale = d3.scale.linear()
-               .domain([0,58.8])
-               .range([0, h]);
-
-//初期化			   
-var map = d3.floorplan().xScale(xscale).yScale(yscale);
-var imagelayer = d3.floorplan.imagelayer();
-var heatmap = d3.floorplan.heatmap();
-var pathplot = d3.floorplan.pathplot();
-var overlays = d3.floorplan.overlays().editMode(true);
-var mapdata = {};
+        init();
 
 
-//ベースとなる画像データの読み込み
-mapdata[imagelayer.id()] = [{
-    url: '../data/warehouse_map_1.jpg',
-    x: 0,
-    y: 0,
-    height: 58.8,
-    width: 58.8
-     }];
+        function init() {
+            //ポリゴン、ヒートマップ、パスデータの読み込み   
+            d3.json("data.json", function(data) {
+                xyPoints = data.pathplot[0].points;
+                data.pathplot[0].points = [];
 
-//レイヤーの追加	 
-map.addLayer(imagelayer)
-   .addLayer(pathplot);
-//   .addLayer(heatmap)
-//   .addLayer(overlays);
 
-   
-//ポリゴン、ヒートマップ、パスデータの読み込み   
-d3.json("data.json", function(data) {
-	mapdata[heatmap.id()] = data.heatmap;
-	mapdata[overlays.id()] = data.overlays;
-	mapdata[pathplot.id()] = data.pathplot;
+                mapdata[pathplot.id()] = data.pathplot;
 
-	//フロアマップ表示
-	d3.select("#demo").append("svg")
-		.attr("width", w)
-		.attr("height", h)
-		.datum(mapdata)
-		.call(map);
-		
+                //フロアマップ表示
+                d3.select("#demo")
+                    .append("svg")
+                    .attr("width", w)
+                    .attr("height", h)
+                    .datum(mapdata)
+                    .call(map);
+            });
+        }
 
-});
-</script>
+        function update(value) {
+            var data = {
+                "pathplot": [{
+                    "id": "flt-1",
+                    "classes": "planned",
+                    "points": []
+                }]
+            };
+
+            for (var i = 0; i < xyPoints.length / 100 * value; i++) {
+                //座標情報にズレがあるので修正する
+                data.pathplot[0].points[i] = {
+                    "x": xyPoints[i].Position_x / 100 + 3.7,
+                    "y": 58-(xyPoints[i].Position_y / 100 + 8.97)
+                };
+            }
+            mapdata[pathplot.id()] = data.pathplot;
+
+            d3.select("#demo")
+                .attr("width", w)
+                .attr("height", h)
+                .datum(mapdata)
+                .call(map);
+
+        }
+
+        function startfnc() {
+            //関数hyoji()を1000ミリ秒間隔で呼び出す
+            setInterval("update()", 500);
+        }
+
+        //スライダーの移動による値の変化を伝える
+        function updateSlider(value) {
+            document.getElementById("slider_value").innerHTML = value;
+            update(value);
+        }
+
+        function loadPositions() {
+            $("#load_spinner").addClass("is-active");
+            var workerId = document.getElementById("workerIdTxt").value;
+            console.log(workerId);
+
+            $.getJSON("https://data-video-noifuji.c9users.io/positions", {
+                workerId: workerId
+            }, function(json) {
+                console.log(json);
+                xyPoints = json.data;
+                $("#load_spinner").removeClass("is-active");
+                $("#seek_bar").val('0');
+
+            });
+
+        }
+    </script>
 </body>
+
 </html>
