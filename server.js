@@ -26,7 +26,7 @@ router.get('/workerId_positions', function(req, res) {
                 }, 500);
                 return;
             }
-            res.setHeader('Access-Control-Allow-Origin', req.protocol + '://' + req.headers.host);
+            res.setHeader('Access-Control-Allow-Origin', req.protocol + '://' + req.headers.host + ":8080");
             res.json(docs);
         });
 });
