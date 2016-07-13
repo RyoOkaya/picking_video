@@ -145,7 +145,7 @@
 
             var protocol = window.location.protocol;
             var hostname = window.location.hostname;
-            $.getJSON(protocol + "//" + hostname +  "/positions", {
+            $.getJSON(protocol + "//" + hostname +  ":8080/positions", {
                 workerId: workerId
             }, function(json) {
                 console.log(json);
