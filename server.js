@@ -12,24 +12,6 @@ const server = http.createServer(router);
 router.use(express.static(path.resolve(__dirname, 'floorplan')));
 // router.use(express.static(path.resolve(__dirname, '')));
 
-router.use(function (req, res, next) {
-
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
-
-    // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-    // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', true);
-
-    // Pass to next layer of middleware
-    next();
-});
 
 //座標情報を持ったワーカーのIDを取得する。
 router.get('/workerId_positions', function(req, res) {
@@ -45,7 +27,8 @@ router.get('/workerId_positions', function(req, res) {
                 }, 500);
                 return;
             }
-            res.setHeader('Access-Control-Allow-Origin', req.protocol + '://' + req.headers.host + ":8080");
+            //res.setHeader('Access-Control-Allow-Origin', req.protocol + '://' + req.headers.host + ":8080");
+            res.setHeader('Access-Control-Allow-Origin', "*");
             res.json(docs);
         });
 });
@@ -74,7 +57,8 @@ router.get('/positions', function(req, res) {
                 result.data.push(p);
             }
             
-            res.setHeader('Access-Control-Allow-Origin', req.protocol + '://' + req.headers.host);
+            //res.setHeader('Access-Control-Allow-Origin', req.protocol + '://' + req.headers.host);
+            res.setHeader('Access-Control-Allow-Origin', "*");
             res.json(result);
         });
 });
