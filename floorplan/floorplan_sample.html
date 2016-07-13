@@ -18,8 +18,8 @@
 </head>
 
 <body>
-    テキストボックスにWorkerIdを入力してLoadボタンをクリック。<br>
-    ロードが終わったら、スライダーで位置調整<br>
+    テキストボックスにWorkerIdを入力してLoadボタンをクリック。<br> ロードが終わったら、スライダーで位置調整
+    <br>
     <div class="mdl-textfield mdl-js-textfield">
         <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="workerIdTxt">
         <label class="mdl-textfield__label" for="workerIdTxt">Input Worker ID...</label>
@@ -34,7 +34,7 @@
     <div id="demo"></div>
 
     <p style="width:500px">
-        <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="0" tabindex="0" oninput="updateSlider(this.value)" onchange="updateSlider(this.value)"　id="seek_bar">
+        <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="0" tabindex="0" oninput="updateSlider(this.value)" onchange="updateSlider(this.value)" 　id="seek_bar">
     </p>
     Value:
     <div id="slider_value">0</div>
@@ -114,7 +114,7 @@
                 //座標情報にズレがあるので修正する
                 data.pathplot[0].points[i] = {
                     "x": xyPoints[i].Position_x / 100 + 3.7,
-                    "y": 58-(xyPoints[i].Position_y / 100 + 8.97)
+                    "y": 58 - (xyPoints[i].Position_y / 100 + 8.97)
                 };
             }
             mapdata[pathplot.id()] = data.pathplot;
@@ -143,7 +143,9 @@
             var workerId = document.getElementById("workerIdTxt").value;
             console.log(workerId);
 
-            $.getJSON("https://data-video-noifuji.c9users.io/positions", {
+            var protocol = window.location.protocol;
+            var hostname = window.location.hostname;
+            $.getJSON(protocol + "//" + hostname +  "/positions", {
                 workerId: workerId
             }, function(json) {
                 console.log(json);
