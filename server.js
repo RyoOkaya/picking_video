@@ -14,7 +14,7 @@ router.use(express.static(path.resolve(__dirname, 'floorplan')));
 
 
 //座標情報を持ったワーカーのIDを取得する。
-router.get('/workerId_positions', function(req, res) {
+router.get('/workerIds', function(req, res) {
     Positions.find({
             'Position_x': {$ne:""}
         })

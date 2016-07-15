@@ -1,0 +1,252 @@
+<!doctype html>
+<!--
+このページはMaterial Design Liteを使用しています。
+https://getmdl.io/styles/index.html
+-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Introducing Lollipop, a sweet new take on Android.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Data Video</title>
+
+    <!-- Page styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.min.css">
+    <link rel="stylesheet" type="text/css" href="d3.floorplan.css" />
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #view-source {
+            position: fixed;
+            display: block;
+            right: 0;
+            bottom: 0;
+            margin-right: 40px;
+            margin-bottom: 40px;
+            z-index: 900;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+
+        <div class="android-header mdl-layout__header mdl-layout__header--waterfall">
+            <div class="mdl-layout__header-row">
+                <span class="android-title mdl-layout-title">
+              
+            <img class="android-logo-image" src="image/data-video_logo.png">
+          </span>
+                <!-- Add spacer, to align navigation to the right in desktop -->
+                <div class="android-header-spacer mdl-layout-spacer"></div>
+                <!-- Navigation -->
+                <div class="android-navigation-container">
+                    <nav class="android-navigation mdl-navigation">
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Warehose Map</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Data Visualization</a>
+                    </nav>
+                </div>
+                <span class="android-mobile-title mdl-layout-title">
+            <img class="android-logo-image" src="image/data-video_logo.png">
+          </span>
+            </div>
+        </div>
+
+
+        <div class="android-content mdl-layout__content">
+            <a name="top"></a>
+            <div class="android-be-together-section mdl-typography--text-center">
+                <div class="logo-font android-slogan">Please select a worker.</div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-typography--text-center">
+                    <select class="mdl-textfield__input" id="workerid_selector">
+                     </select>
+                </div>
+                <!--<a href="#screens">
+                    <button class="android-fab mdl-button mdl-button--colored mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-typography--text-center">
+              <i class="material-icons">expand_more</i>
+            </button>
+                </a>-->
+                <a href="#screens">
+                    <div class="mdl-typography--text-center">
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" id="loadBtn" onClick="loadPositions()">
+                          Load
+                    </button>
+                    </div>
+                </a>
+
+
+            </div>
+            <div class="android-screen-section mdl-typography--text-center">
+                <a name="screens"></a>
+    <!-- MDL Spinner Component with Single Color -->
+    <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner" id="load_spinner"></div>
+                <div id="demo"></div>
+
+                <!--<p style="width:500px">-->
+                    <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="0" tabindex="0" oninput="updateSlider(this.value)" onchange="updateSlider(this.value)" 　id="seek_bar">
+                <!--</p>-->
+                Time:
+                <div id="slider_value">0</div>
+                
+            </div>
+
+            <footer class="android-footer mdl-mega-footer">
+
+            </footer>
+        </div>
+    </div>
+    <script src="https://code.getmdl.io/1.1.3/material.min.js">
+    </script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="d3.floorplan.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+
+    <script>
+        var workerIds = [];
+        window.onload = function() {
+            loadWorkerIds();
+        };
+        
+        var w = 588;
+        var h = 588;
+
+        //スケールの指定
+        var xscale = d3.scale.linear()
+            .domain([0, 58.8])
+            .range([0, w]);
+
+        var yscale = d3.scale.linear()
+            .domain([0, 58.8])
+            .range([0, h]);
+
+        //初期化			   
+        var map = d3.floorplan().xScale(xscale).yScale(yscale);
+        var imagelayer = d3.floorplan.imagelayer();
+        var heatmap = d3.floorplan.heatmap();
+        var pathplot = d3.floorplan.pathplot();
+        var overlays = d3.floorplan.overlays().editMode(true);
+        var mapdata = {};
+        var PUSH_UNIT = 10;
+        var pushCount = 0;
+        var xyPoints = [];
+
+        //ベースとなる画像データの読み込み
+        mapdata[imagelayer.id()] = [{
+            url: './data/warehouse_map_1.jpg',
+            x: 0,
+            y: 0,
+            height: 58.8,
+            width: 58.8
+        }];
+
+        //レイヤーの追加	 
+        map.addLayer(imagelayer)
+            .addLayer(pathplot);
+        //   .addLayer(heatmap)
+        //   .addLayer(overlays);
+
+
+        init();
+
+
+        function init() {
+            //ポリゴン、ヒートマップ、パスデータの読み込み   
+            d3.json("data.json", function(data) {
+                xyPoints = data.pathplot[0].points;
+                data.pathplot[0].points = [];
+
+
+                mapdata[pathplot.id()] = data.pathplot;
+
+                //フロアマップ表示
+                d3.select("#demo")
+                    .append("svg")
+                    .attr("width", w)
+                    .attr("height", h)
+                    .datum(mapdata)
+                    .call(map);
+            });
+        }
+
+        function update(value) {
+            var data = {
+                "pathplot": [{
+                    "id": "flt-1",
+                    "classes": "planned",
+                    "points": []
+                }]
+            };
+            
+            var currentIndex = xyPoints.length / 100 * value;
+
+            for (var i = 0; i < currentIndex; i++) {
+                //座標情報にズレがあるので修正する
+                data.pathplot[0].points[i] = {
+                    "x": xyPoints[i].Position_x / 100 + 3.7,
+                    "y": 58 - (xyPoints[i].Position_y / 100 + 8.97)
+                };
+            }
+            mapdata[pathplot.id()] = data.pathplot;
+
+            d3.select("#demo")
+                .attr("width", w)
+                .attr("height", h)
+                .datum(mapdata)
+                .call(map);
+                
+                
+            document.getElementById("slider_value").innerHTML = xyPoints[Math.floor(currentIndex)].time;
+
+        }
+
+        function startfnc() {
+            //関数hyoji()を1000ミリ秒間隔で呼び出す
+            setInterval("update()", 500);
+        }
+
+        //スライダーの移動による値の変化を伝える
+        function updateSlider(value) {
+            update(value);
+        }
+
+        function loadPositions() {
+            $("#load_spinner").addClass("is-active");
+            var workerId = document.getElementById("workerid_selector").value;
+            console.log(workerId);
+
+            var protocol = window.location.protocol;
+            var hostname = window.location.hostname;
+            $.getJSON(protocol + "//" + hostname +  ":8080/positions", {
+                workerId: workerId
+            }, function(json) {
+                console.log(json);
+                xyPoints = json.data;
+                $("#load_spinner").removeClass("is-active");
+                $("#seek_bar").val('0');
+
+            });
+
+        }
+
+        function loadWorkerIds() {
+
+            var protocol = window.location.protocol;
+            var hostname = window.location.hostname;
+            $.getJSON(protocol + "//" + hostname + ":8080/workerIds", {}, function(json) {
+                console.log(json);
+                workerIds = json
+
+                for (var i = 0; i < workerIds.length; i++) {
+                    $('#workerid_selector').append($('<option>').html("worker" + workerIds[i]).val("1"));
+                }
+            });
+
+        }
+    </script>
+</body>
+
+</html>
