@@ -1,96 +1,325 @@
-<html>
+<!doctype html>
+<!--
+このページはMaterial Design Liteを使用しています。
+https://getmdl.io/styles/index.html
+-->
+<html lang="en">
 
 <head>
-	<meta charset='utf-8'>
-	<title>IoT Picking Video</title>
-	<link rel="stylesheet" type="text/css" href="./node_modules/bulma/css/bulma.min.css">
-	<script src="./node_modules/plotly.js/dist/plotly.min.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Introducing Lollipop, a sweet new take on Android.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Picking Data Video</title>
+
+    <!-- Page styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!--<link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.min.css">-->
+    <link rel="stylesheet" href="css/custom_material.css">
+    <link rel="stylesheet" type="text/css" href="css/d3.floorplan.css" />
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        #view-source {
+            position: fixed;
+            display: block;
+            right: 0;
+            bottom: 0;
+            margin-right: 40px;
+            margin-bottom: 40px;
+            z-index: 900;
+        }
+    </style>
 </head>
 
 <body>
-	<div class="hero hero-head is-dark is-bold ">
-		<header class="nav">
-			<div class="container">
-				<div class="nav-left">
-					<a class="title nav-item is-active" href="">
-						IoT Picking Video
-			          </a>
-				</div>
-			</div>
-		</header>
-	</div>
-	<div class="columns">
-		<div class="column is-2" style="background-color: navy;">
-			<aside class="menu">
-				ようこそ ゲスト さん
-				<p class="menu-label">
-					ビデオ設定
-				</p>
-				<label class="label">
-						日付: 
-					</label>
-				<p class="control">
-					<input class="input" type="date" value="2016-04-17">
-				</p>
-				<p class="control">
-					<label class="label">
-						時間:
-						</label>
-					<input class="input" type="time" value="14:00" step="600">
-					<label class="label">
-						～ 
-						</label>
-					<input class="input" type="time" value="15:00" step="600">
-				</p>
-				<p class="control">
-					<a class="button is-light">更新</a>
-				</p>
-			</aside>
-		</div>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 
-		<div class="column" style="background-color: whitesmoke;">
-			<!-- Simple Line Graph using SVG and d3.js -->
-			<div id="plotly_graph"></div>
-			<!--<div id="graph" class="aGraph" style="position:absolute;top:0px;left:0; float:left;"></div>-->
-		</div>
-	</div>
+        <div class="android-header mdl-layout__header mdl-layout__header--waterfall">
+            <div class="mdl-layout__header-row">
+                <span class="android-title mdl-layout-title">
+                   <a href="./"> <img class="android-logo-image" src="image/data-video_logo.png"></a>
+                </span>
+                <!-- Add spacer, to align navigation to the right in desktop -->
+                <div class="android-header-spacer mdl-layout-spacer"></div>
+                <!-- Navigation -->
+                <div class="android-navigation-container">
+                    <nav class="android-navigation mdl-navigation">
+                        <!--<a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Warehose Map</a>-->
+                        <!--<a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Data Visualization</a>-->
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase" href="./">Top</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase" href="manual.html">Manual</a>
+                    </nav>
+                </div>
+                <span class="android-mobile-title mdl-layout-title">
+                    <img class="android-logo-image" src="image/data-video_logo.png">
+                </span>
+            </div>
+        </div>
 
-	<script>
-		const socket = io();
-		// comment out because this code is too heavy.
-		//var picking_data_uri = "./data/all_picking_data.csv";
-		const picking_data_uri = "./data/worker1_picking_data.csv";
-		const xField = "Position_x";
-		const yField = "Position_y";
 
-		let time = {
-			from: '16:00:00',
-			to: '16:30:00'
-		};
-		socket.emit('get_positions_by_time', time)
+        <div class="android-content mdl-layout__content">
+            <a name="top"></a>
+            <div class="android-be-together-section mdl-typography--text-center">
+                <!--<div class="logo-font android-slogan">Please select a worker.</div>-->
+                <div class="logo-font android-slogan">Please select time.</div>
 
-		// for debug
-		let data;
-		socket.on('draw', function(data) {
-			const layout = {
-				title: 'Picking Video',
-				xaxis: {
-					// rangeselector: selectorOptions,
-					rangeslider: {
-						showgrid: false,
-						thickness: 0.05,
-						borderwidth: 10
-					}
-				},
-				yaxis: {
-					showgrid: false,
-					fixedrange: true
-				}
-			};
-			Plotly.plot(document.getElementById('plotly_graph'), data, layout);
-		});
-	</script>
+                <div class="mdl-textfield mdl-js-textfield mdl-typography--text-center mdl-textfield--floating-label">
+                    <!--<select class="mdl-textfield__input" id="workerid_selector">-->
+                    <!--<select class="mdl-textfield__input" id="from_time_selector"></select>-->
+                    <!--<select class="mdl-textfield__input" id="to_time_selector"></select>-->
+                    <label class="mdl-textfield__label" for="date_selector">日付 </label>
+                    <select id="date_selector" class="mdl-textfield__input" type="date" value="2016-04-17">
+                        <option value="2016-04-17">2016-02-17</option>
+                    </select>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-typography--text-center mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="from_time_selector">開始時刻</label>
+                    <!--<input id="time_from" class="mdl-textfield__input" type="time" value="14:00" step="1200">-->
+                    <select id="from_time_selector" class="mdl-textfield__input">
+                        <option value="14:00">14:00</option>
+                        <option value="14:20">14:20</option>
+                        <option value="14:40">14:40</option>
+                        <option value="15:00">15:00</option>                        
+                        <option value="15:20" selected>15:20</option>
+                        <option value="15:40">15:40</option>
+                        <option value="16:00">16:00</option>
+                        <option value="16:20">16:20</option>
+                        <option value="16:40">16:40</option>
+                        <option value="17:00">17:00</option>                        
+                        <option value="17:20">17:20</option>
+                        <option value="17:40">17:40</option>
+                    <select>
+                </div>
+                <div class="mdl-textfield mdl-js-textfield mdl-typography--text-center mdl-textfield--floating-label">
+                <label class="mdl-textfield__label" for="to_time_selector">終了時刻</label>
+                    <!--<input id="time_to" class="mdl-textfield__input" type="time" value="15:00" step="1200">-->
+                    <select id="to_time_selector" class="mdl-textfield__input">
+                        <option value="14:20" selected>14:20</option>
+                        <option value="14:40">14:40</option>
+                        <option value="15:00">15:00</option>                        
+                        <option value="15:20">15:20</option>
+                        <option value="15:40">15:40</option>
+                        <option value="16:00">16:00</option>
+                        <option value="16:20">16:20</option>
+                        <option value="16:40">16:40</option>
+                        <option value="17:00">17:00</option>                        
+                        <option value="17:20" selected>17:20</option>
+                        <option value="17:40">17:40</option>
+                        <option value="18:00">18:00</option>                        
+                    <select>
+                </div>
+
+                <!--<a href="#screens">-->
+                <a href="#map">
+                    <div class="mdl-typography--text-center">
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" id="loadBtn" onClick="loadData()">
+                          Watch Interactive Video
+                        </button>
+                    </div>
+                </a>
+
+
+            </div>
+            <div class="android-screen-section mdl-typography--text-center">
+                <a name="map"></a>
+
+                <!-- MDL Spinner Component with Single Color -->
+                <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner" id="load_spinner"></div>
+                <div id="demo"></div>
+
+                <!--<p style="width:500px">-->
+                    <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="50" tabindex="0" oninput="updateSlider(this.value)" onchange="updateSlider(this.value)" id="seek_bar">
+                <!--</p>-->
+                日時: 2016/2/17  
+                <span id="slider_value">0</span>
+
+                <div class="mdl-mega-footer--right-section">
+                    <a class="mdl-typography--font-light" href="#top">
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" id="backBtn">Back to Top</button>
+                        <!--<button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+                            <i class="material-icons">expand_less</i>
+                        </button>-->
+                    </a>
+                </div>
+            </div>
+
+            <footer class="android-footer mdl-mega-footer">
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="libs/d3.floorplan.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+  
+    <script>
+        var workerIds = [];
+        // window.onload = function() {
+        //     loadWorkerIds();
+        // };
+
+        var w = 588;
+        var h = 588;
+
+        //スケールの指定
+        var xscale = d3.scale.linear()
+            .domain([0, 58.8])
+            .range([0, w]);
+
+        var yscale = d3.scale.linear()
+            .domain([0, 58.8])
+            .range([0, h]);
+
+        //初期化			   
+        var map = d3.floorplan().xScale(xscale).yScale(yscale);
+        var imagelayer = d3.floorplan.imagelayer();
+        var heatmap = d3.floorplan.heatmap();
+        var pathplot = d3.floorplan.pathplot();
+        var overlays = d3.floorplan.overlays().editMode(true);
+        var mapdata = {};
+        var PUSH_UNIT = 10;
+        var pushCount = 0;
+        var xyPoints = [];
+
+        //ベースとなる画像データの読み込み
+        mapdata[imagelayer.id()] = [{
+            url: './data/warehouse_map_1.jpg',
+            x: 0,
+            y: 0,
+            height: 58.8,
+            width: 58.8
+        }];
+
+        //レイヤーの追加	 
+        map.addLayer(imagelayer)
+            .addLayer(pathplot);
+        //   .addLayer(heatmap)
+        //   .addLayer(overlays);
+
+        map.panZoom(false);
+
+        init();
+        function init() {
+            //ポリゴン、ヒートマップ、パスデータの読み込み   
+            d3.json("db/data.json", function(data) {
+                xyPoints = data.pathplot[0].points;
+                data.pathplot[0].points = [];
+                mapdata[pathplot.id()] = data.pathplot;
+
+                //フロアマップ表示
+                d3.select("#demo")
+                    .append("svg")
+                    .attr("width", w)
+                    .attr("height", h)
+                    .datum(mapdata)
+                    .call(map);
+            });
+        }
+
+        // 描画
+        function update(value) {
+            var data = {
+                "pathplot": [{
+                    "id": "flt-1",
+                    "classes": "planned",
+                    "points": []
+                }]
+            };
+
+            var currentIndex = xyPoints.length / 100 * value;
+
+            for (var i = 0; i < currentIndex; i++) {
+                //座標情報にズレがあるので修正する
+                data.pathplot[0].points[i] = {
+                    "x": xyPoints[i].Position_x / 100 + 3.7,
+                    "y": 58 - (xyPoints[i].Position_y / 100 + 8.97)
+                };
+            }
+            mapdata[pathplot.id()] = data.pathplot;
+
+            d3.select("#demo")
+                .attr("width", w)
+                .attr("height", h)
+                .datum(mapdata)
+                .call(map);
+                
+            document.getElementById("slider_value").innerHTML = xyPoints[Math.floor(currentIndex)].time;
+        }
+
+        // function startfnc() {
+        //     //関数hyoji()を1000ミリ秒間隔で呼び出す
+        //     setInterval("update()", 500);
+        // }
+
+        //スライダーの移動による値の変化を伝える
+        function updateSlider(value) {
+            update(value);
+        }
+
+        // 初期呼び出し
+        loadData();
+        //描画データ取得
+        function loadData() {
+            $("#load_spinner").addClass("is-active");
+            // var workerId = document.getElementById("workerid_selector").value;
+            var input_date = document.getElementById("date_selector").value;
+            var from_time = document.getElementById("from_time_selector").value;
+            var to_time = document.getElementById("to_time_selector").value;
+
+            var protocol = window.location.protocol;
+            var hostname = window.location.hostname;
+            $.getJSON(protocol + "//" + hostname + ":8080/getJsonByTime", {
+                input_date: input_date,
+                from_time: from_time,
+                to_time: to_time
+            }, function(json) {
+                console.log(json);
+                xyPoints = json.data;
+                $("#load_spinner").removeClass("is-active");
+                //$("#seek_bar").val('50');
+                update(document.getElementById("seek_bar").value);
+                // $("#seek_bar").disabled = '';
+                document.getElementById("seek_bar").disabled = '';
+            });
+        }
+
+        // function update(value) {
+        //     document.getElementById("slider_value").innerHTML = xyPoints[Math.floor(currentIndex)].time;
+        // }
+        
+        //
+        // const socket = io();
+        // comment out because this code is too heavy.
+        //var picking_data_uri = "./data/all_picking_data.csv";
+        //const picking_data_uri = "./data/worker1_picking_data.csv";
+        // socket.emit('get_positions_by_time', time)
+
+        // for debug
+        // socket.on('draw', function(data) {
+        //     const layout = {
+        //         title: 'Picking Data Video',
+        //         height: 800,
+        //         width: 700,
+        //         autosize: false,
+        //         xaxis: {
+        //             // rangeselector: selectorOptions,
+        //             rangeslider: {
+        //                 showgrid: false,
+        //                 thickness: 0.05,
+        //                 borderwidth: 10
+        //             }
+        //         },
+        //         yaxis: {
+        //             showgrid: false,
+        //             fixedrange: true
+        //         }
+        //     };
+        //     Plotly.plot(document.getElementById('plotly_graph'), data, layout, {showLink: false});
+        // });
+    </script>
 </body>
 
 </html>

@@ -10,7 +10,7 @@ https://getmdl.io/styles/index.html
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Introducing Lollipop, a sweet new take on Android.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Data Video</title>
+    <title>Picking Data Video</title>
 
     <!-- Page styles -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
@@ -37,21 +37,22 @@ https://getmdl.io/styles/index.html
         <div class="android-header mdl-layout__header mdl-layout__header--waterfall">
             <div class="mdl-layout__header-row">
                 <span class="android-title mdl-layout-title">
-              
-            <img class="android-logo-image" src="image/data-video_logo.png">
-          </span>
+                   <a href="./"> <img class="android-logo-image" src="image/data-video_logo.png"></a>
+                </span>
                 <!-- Add spacer, to align navigation to the right in desktop -->
                 <div class="android-header-spacer mdl-layout-spacer"></div>
                 <!-- Navigation -->
                 <div class="android-navigation-container">
                     <nav class="android-navigation mdl-navigation">
-                        <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Warehose Map</a>
-                        <a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Data Visualization</a>
+                        <!--<a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Warehose Map</a>-->
+                        <!--<a class="mdl-navigation__link mdl-typography--text-uppercase" href="">Data Visualization</a>-->
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase" href="./">View Video</a>
+                        <a class="mdl-navigation__link mdl-typography--text-uppercase" href="manual.html">Manual</a>
                     </nav>
                 </div>
                 <span class="android-mobile-title mdl-layout-title">
-            <img class="android-logo-image" src="image/data-video_logo.png">
-          </span>
+                    <img class="android-logo-image" src="image/data-video_logo.png">
+                </span>
             </div>
         </div>
 
@@ -65,12 +66,7 @@ https://getmdl.io/styles/index.html
                     <select class="mdl-textfield__input" id="workerid_selector">
                      </select>
                 </div>
-                <!--<a href="#screens">
-                    <button class="android-fab mdl-button mdl-button--colored mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-typography--text-center">
-              <i class="material-icons">expand_more</i>
-            </button>
-                </a>-->
-                <a href="#screens">
+                <a href="#map">
                     <div class="mdl-typography--text-center">
                         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" id="loadBtn" onClick="loadPositions()">
                           Load
@@ -81,9 +77,9 @@ https://getmdl.io/styles/index.html
 
             </div>
             <div class="android-screen-section mdl-typography--text-center">
-                <a name="screens"></a>
-    <!-- MDL Spinner Component with Single Color -->
-    <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner" id="load_spinner"></div>
+                <a name="map"></a>
+                <!-- MDL Spinner Component with Single Color -->
+                <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner" id="load_spinner"></div>
                 <div id="demo"></div>
 
                 <!--<p style="width:500px">-->
@@ -91,16 +87,26 @@ https://getmdl.io/styles/index.html
                 <!--</p>-->
                 Time:
                 <div id="slider_value">0</div>
-                
+
+                <div class="mdl-mega-footer--right-section">
+                    <a class="mdl-typography--font-light" href="#top">
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" id="backBtn">
+                          Back to Top
+                    </button>
+                        <!--<button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+                    <i class="material-icons">expand_less</i>
+                </button>-->
+                    </a>
+                </div>
             </div>
+
 
             <footer class="android-footer mdl-mega-footer">
 
             </footer>
         </div>
     </div>
-    <script src="https://code.getmdl.io/1.1.3/material.min.js">
-    </script>
+    <script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script src="d3.floorplan.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
@@ -110,7 +116,7 @@ https://getmdl.io/styles/index.html
         window.onload = function() {
             loadWorkerIds();
         };
-        
+
         var w = 588;
         var h = 588;
 
@@ -180,7 +186,7 @@ https://getmdl.io/styles/index.html
                     "points": []
                 }]
             };
-            
+
             var currentIndex = xyPoints.length / 100 * value;
 
             for (var i = 0; i < currentIndex; i++) {
@@ -197,8 +203,8 @@ https://getmdl.io/styles/index.html
                 .attr("height", h)
                 .datum(mapdata)
                 .call(map);
-                
-                
+
+
             document.getElementById("slider_value").innerHTML = xyPoints[Math.floor(currentIndex)].time;
 
         }
@@ -220,7 +226,7 @@ https://getmdl.io/styles/index.html
 
             var protocol = window.location.protocol;
             var hostname = window.location.hostname;
-            $.getJSON(protocol + "//" + hostname +  ":8080/positions", {
+            $.getJSON(protocol + "//" + hostname + ":8080/positions", {
                 workerId: workerId
             }, function(json) {
                 console.log(json);

@@ -1,0 +1,96 @@
+<html>
+
+<head>
+	<meta charset='utf-8'>
+	<title>IoT Picking Video</title>
+	<link rel="stylesheet" type="text/css" href="./node_modules/bulma/css/bulma.min.css">
+	<script src="./node_modules/plotly.js/dist/plotly.min.js"></script>
+	<script src="./socket.io/socket.io.js"></script>
+</head>
+
+<body>
+	<div class="hero hero-head is-dark is-bold ">
+		<header class="nav">
+			<div class="container">
+				<div class="nav-left">
+					<a class="title nav-item is-active" href="">
+						IoT Picking Video
+			          </a>
+				</div>
+			</div>
+		</header>
+	</div>
+	<div class="columns">
+		<div class="column is-2" style="background-color: navy;">
+			<aside class="menu">
+				ようこそ ゲスト さん
+				<p class="menu-label">
+					ビデオ設定
+				</p>
+				<label class="label">
+						日付: 
+					</label>
+				<p class="control">
+					<input class="input" type="date" value="2016-04-17">
+				</p>
+				<p class="control">
+					<label class="label">
+						時間:
+						</label>
+					<input class="input" type="time" value="14:00" step="600">
+					<label class="label">
+						～ 
+						</label>
+					<input class="input" type="time" value="15:00" step="600">
+				</p>
+				<p class="control">
+					<a class="button is-light">更新</a>
+				</p>
+			</aside>
+		</div>
+
+		<div class="column" style="background-color: whitesmoke;">
+			<!-- Simple Line Graph using SVG and d3.js -->
+			<div id="plotly_graph"></div>
+			<!--<div id="graph" class="aGraph" style="position:absolute;top:0px;left:0; float:left;"></div>-->
+		</div>
+	</div>
+
+	<script>
+		const socket = io();
+		// comment out because this code is too heavy.
+		//var picking_data_uri = "./data/all_picking_data.csv";
+		const picking_data_uri = "./data/worker1_picking_data.csv";
+		const xField = "Position_x";
+		const yField = "Position_y";
+
+		let time = {
+			from: '16:00:00',
+			to: '16:30:00'
+		};
+		socket.emit('get_positions_by_time', time)
+
+		// for debug
+		let data;
+		socket.on('draw', function(data) {
+			const layout = {
+				title: 'Picking Video',
+				xaxis: {
+					// rangeselector: selectorOptions,
+					rangeslider: {
+						showgrid: false,
+						thickness: 0.05,
+						borderwidth: 10
+					}
+				},
+				yaxis: {
+					showgrid: false,
+					fixedrange: true
+				}
+			};
+			Plotly.plot(document.getElementById('plotly_graph'), data, layout);
+		});
+	</script>
+</body>
+
+</html>
