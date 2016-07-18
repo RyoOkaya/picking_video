@@ -62,12 +62,14 @@ https://getmdl.io/styles/index.html
             <a name="top"></a>
             <div class="android-be-together-section mdl-typography--text-center">
                 <!--<div class="logo-font android-slogan">Please select a worker.</div>-->
-                <div class="logo-font android-slogan">Please select time.</div>
+                <div class="logo-font android-slogan">Please select time and a worker.</div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-typography--text-center mdl-textfield--floating-label">
-                    <!--<select class="mdl-textfield__input" id="workerid_selector">-->
-                    <!--<select class="mdl-textfield__input" id="from_time_selector"></select>-->
-                    <!--<select class="mdl-textfield__input" id="to_time_selector"></select>-->
+                    <label class="mdl-textfield__label" for="date_selector">ワーカID </label>
+                    <select id="workerid_selector" class="mdl-textfield__input"></select>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-typography--text-center mdl-textfield--floating-label">
                     <label class="mdl-textfield__label" for="date_selector">日付 </label>
                     <select id="date_selector" class="mdl-textfield__input" type="date" value="2016-04-17">
                         <option value="2016-04-17">2016-02-17</option>
@@ -132,8 +134,13 @@ https://getmdl.io/styles/index.html
                 <!--<p style="width:500px">-->
                     <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="50" tabindex="0" oninput="updateSlider(this.value)" onchange="updateSlider(this.value)" id="seek_bar">
                 <!--</p>-->
-                日時: 2016/2/17  
-                <span id="slider_value">0</span>
+                <p style="font-size: medium;">
+                    <b>ワーカ:</b>
+                    <span id="workerId_value">0</span>
+                    &ensp;
+                    <b>日時: </b>2016/2/17  
+                    <span id="slider_value">0</span>
+                </p>
 
                 <div class="mdl-mega-footer--right-section">
                     <a class="mdl-typography--font-light" href="#top">
@@ -158,7 +165,8 @@ https://getmdl.io/styles/index.html
     <script>
         var workerIds = [];
         // window.onload = function() {
-        //     loadWorkerIds();
+            // workerId選択ボックス用
+            loadWorkerIds();
         // };
 
         var w = 588;
@@ -264,7 +272,11 @@ https://getmdl.io/styles/index.html
         //描画データ取得
         function loadData() {
             $("#load_spinner").addClass("is-active");
-            // var workerId = document.getElementById("workerid_selector").value;
+            var workerId = document.getElementById("workerid_selector").value;
+            // workerIfのデフォルト設定
+            if (workerId == '') {
+                workerId = 1;
+            }
             var input_date = document.getElementById("date_selector").value;
             var from_time = document.getElementById("from_time_selector").value;
             var to_time = document.getElementById("to_time_selector").value;
@@ -272,6 +284,7 @@ https://getmdl.io/styles/index.html
             var protocol = window.location.protocol;
             var hostname = window.location.hostname;
             $.getJSON(protocol + "//" + hostname + ":8080/getJsonByTime", {
+                workerId: workerId,
                 input_date: input_date,
                 from_time: from_time,
                 to_time: to_time
@@ -279,46 +292,23 @@ https://getmdl.io/styles/index.html
                 console.log(json);
                 xyPoints = json.data;
                 $("#load_spinner").removeClass("is-active");
-                //$("#seek_bar").val('50');
                 update(document.getElementById("seek_bar").value);
-                // $("#seek_bar").disabled = '';
-                document.getElementById("seek_bar").disabled = '';
+                document.getElementById("workerId_value").innerHTML = "worker" + workerId;
             });
         }
 
-        // function update(value) {
-        //     document.getElementById("slider_value").innerHTML = xyPoints[Math.floor(currentIndex)].time;
-        // }
-        
-        //
-        // const socket = io();
-        // comment out because this code is too heavy.
-        //var picking_data_uri = "./data/all_picking_data.csv";
-        //const picking_data_uri = "./data/worker1_picking_data.csv";
-        // socket.emit('get_positions_by_time', time)
+        function loadWorkerIds() {
+            var protocol = window.location.protocol;
+            var hostname = window.location.hostname;
+            $.getJSON(protocol + "//" + hostname + ":8080/workerIds", {}, function(json) {
+                console.log(json);
+                workerIds = json
 
-        // for debug
-        // socket.on('draw', function(data) {
-        //     const layout = {
-        //         title: 'Picking Data Video',
-        //         height: 800,
-        //         width: 700,
-        //         autosize: false,
-        //         xaxis: {
-        //             // rangeselector: selectorOptions,
-        //             rangeslider: {
-        //                 showgrid: false,
-        //                 thickness: 0.05,
-        //                 borderwidth: 10
-        //             }
-        //         },
-        //         yaxis: {
-        //             showgrid: false,
-        //             fixedrange: true
-        //         }
-        //     };
-        //     Plotly.plot(document.getElementById('plotly_graph'), data, layout, {showLink: false});
-        // });
+                for (var i = 0; i < workerIds.length; i++) {
+                    $('#workerid_selector').append($('<option>').html("worker" + workerIds[i]).val(workerIds[i]));
+                }
+            });
+        }
     </script>
 </body>
 
