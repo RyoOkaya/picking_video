@@ -8,13 +8,13 @@ const server = http.createServer(router);
 // router.use(express.static(path.resolve(__dirname, 'floorplan')));
 router.use(express.static(path.resolve(__dirname, '')));
 
-// server.listen(process.env.PORT || 8080, function() {
-//     var addr = server.address();
-//     console.log("server listening at", addr.address + ":" + addr.port);
-// });
+server.listen(process.env.PORT || 8080, function() {
+    var addr = server.address();
+    console.log("server listening at", addr.address + ":" + addr.port);
+});
 
-server.listen(process.env.PORT, process.env.IP);
-console.log("server listening at", process.env.IP + ":" + process.env.PORT);
+// server.listen(process.env.PORT, process.env.IP);
+// console.log("server listening at", process.env.IP + ":" + process.env.PORT);
 
 const url = require('url');
 
