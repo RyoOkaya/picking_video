@@ -8,19 +8,19 @@ const server = http.createServer(router);
 // router.use(express.static(path.resolve(__dirname, 'floorplan')));
 router.use(express.static(path.resolve(__dirname, '')));
 
-server.listen(process.env.PORT || 8080, function() {
-    var addr = server.address();
-    console.log("server listening at", addr.address + ":" + addr.port);
-});
+// server.listen(process.env.PORT || 8080, function() {
+//     var addr = server.address();
+//     console.log("server listening at", addr.address + ":" + addr.port);
+// });
 
-// server.listen(process.env.PORT, process.env.IP);
-// console.log("server listening at", process.env.IP + ":" + process.env.PORT);
+server.listen(process.env.PORT, process.env.IP);
+console.log("server listening at", process.env.IP + ":" + process.env.PORT);
 
 const url = require('url');
 
 //座標情報を持ったワーカーのIDを取得する。(ハードコーディング)
 router.get('/workerIds', function(req, res) {
-    var workerIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 18, 19];
+    var workerIds = [1, 2, 5, 7, 9, 10, 12, 13, 14, 15, 16, 18, 19];
     res.setHeader('Access-Control-Allow-Origin', "*");
     res.json(workerIds);
 });
